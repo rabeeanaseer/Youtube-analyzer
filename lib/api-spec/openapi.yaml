@@ -1,0 +1,433 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: YouTube Content Performance Analyzer API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: channels
+    description: YouTube channel operations
+  - name: videos
+    description: YouTube video operations
+  - name: analytics
+    description: Analytics and insights
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /channels/search:
+    get:
+      operationId: findChannels
+      tags: [channels]
+      summary: Search YouTube channels by keyword or handle
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: Search query (channel name, handle, or keyword)
+        - in: query
+          name: maxResults
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: List of matching channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChannelSummary"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /channels/{channelId}:
+    get:
+      operationId: getChannel
+      tags: [channels]
+      summary: Get channel details and statistics
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Channel details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelDetail"
+        "404":
+          description: Channel not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /videos/{channelId}:
+    get:
+      operationId: fetchChannelVideos
+      tags: [videos]
+      summary: Get videos from a channel with statistics
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of videos with statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VideoStats"
+        "404":
+          description: Channel not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /analytics/{channelId}:
+    get:
+      operationId: fetchChannelAnalytics
+      tags: [analytics]
+      summary: Get aggregated analytics and insights for a channel
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Analytics and insights
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelAnalytics"
+        "404":
+          description: Channel not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /compare:
+    post:
+      operationId: compareChannels
+      tags: [analytics]
+      summary: Compare multiple channels side by side
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompareInput"
+      responses:
+        "200":
+          description: Comparison results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChannelComparison"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    ChannelSummary:
+      type: object
+      required: [id, title, description, thumbnailUrl, subscriberCount, videoCount, viewCount]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        thumbnailUrl:
+          type: string
+        subscriberCount:
+          type: integer
+        videoCount:
+          type: integer
+        viewCount:
+          type: integer
+        handle:
+          type: ["string", "null"]
+
+    ChannelDetail:
+      type: object
+      required: [id, title, description, thumbnailUrl, bannerUrl, subscriberCount, videoCount, viewCount, publishedAt, country]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        thumbnailUrl:
+          type: string
+        bannerUrl:
+          type: ["string", "null"]
+        subscriberCount:
+          type: integer
+        videoCount:
+          type: integer
+        viewCount:
+          type: integer
+        publishedAt:
+          type: string
+        country:
+          type: ["string", "null"]
+        handle:
+          type: ["string", "null"]
+
+    VideoStats:
+      type: object
+      required: [id, title, description, thumbnailUrl, publishedAt, viewCount, likeCount, commentCount, durationSeconds, durationFormatted, engagementRate, hourOfDay, dayOfWeek]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        thumbnailUrl:
+          type: string
+        publishedAt:
+          type: string
+        viewCount:
+          type: integer
+        likeCount:
+          type: integer
+        commentCount:
+          type: integer
+        durationSeconds:
+          type: integer
+        durationFormatted:
+          type: string
+        engagementRate:
+          type: number
+        hourOfDay:
+          type: integer
+        dayOfWeek:
+          type: integer
+        dayOfWeekName:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        categoryId:
+          type: ["string", "null"]
+
+    HourlyHeatmapCell:
+      type: object
+      required: [hour, dayOfWeek, dayName, avgViews, videoCount]
+      properties:
+        hour:
+          type: integer
+        dayOfWeek:
+          type: integer
+        dayName:
+          type: string
+        avgViews:
+          type: number
+        videoCount:
+          type: integer
+
+    DurationBucket:
+      type: object
+      required: [label, minSeconds, maxSeconds, avgViews, avgEngagement, videoCount]
+      properties:
+        label:
+          type: string
+        minSeconds:
+          type: integer
+        maxSeconds:
+          type: integer
+        avgViews:
+          type: number
+        avgEngagement:
+          type: number
+        videoCount:
+          type: integer
+
+    TopVideo:
+      type: object
+      required: [id, title, thumbnailUrl, viewCount, likeCount, commentCount, engagementRate, publishedAt, durationFormatted]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        thumbnailUrl:
+          type: string
+        viewCount:
+          type: integer
+        likeCount:
+          type: integer
+        commentCount:
+          type: integer
+        engagementRate:
+          type: number
+        publishedAt:
+          type: string
+        durationFormatted:
+          type: string
+
+    ChannelAnalytics:
+      type: object
+      required: [channelId, totalVideos, avgViews, avgLikes, avgComments, avgEngagementRate, avgDurationSeconds, medianViews, topVideos, heatmapData, durationBuckets, viewsOverTime, bestHour, bestDay, engagementVsViews]
+      properties:
+        channelId:
+          type: string
+        totalVideos:
+          type: integer
+        avgViews:
+          type: number
+        avgLikes:
+          type: number
+        avgComments:
+          type: number
+        avgEngagementRate:
+          type: number
+        avgDurationSeconds:
+          type: number
+        medianViews:
+          type: number
+        topVideos:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopVideo"
+        heatmapData:
+          type: array
+          items:
+            $ref: "#/components/schemas/HourlyHeatmapCell"
+        durationBuckets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DurationBucket"
+        viewsOverTime:
+          type: array
+          items:
+            $ref: "#/components/schemas/ViewsDataPoint"
+        bestHour:
+          type: integer
+        bestDay:
+          type: string
+        engagementVsViews:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngagementPoint"
+
+    ViewsDataPoint:
+      type: object
+      required: [date, views, videoCount]
+      properties:
+        date:
+          type: string
+        views:
+          type: number
+        videoCount:
+          type: integer
+
+    EngagementPoint:
+      type: object
+      required: [videoId, title, viewCount, engagementRate, durationSeconds]
+      properties:
+        videoId:
+          type: string
+        title:
+          type: string
+        viewCount:
+          type: integer
+        engagementRate:
+          type: number
+        durationSeconds:
+          type: integer
+
+    ChannelComparison:
+      type: object
+      required: [channelId, title, thumbnailUrl, subscriberCount, avgViews, avgEngagementRate, avgDurationSeconds, videoCount, totalViews]
+      properties:
+        channelId:
+          type: string
+        title:
+          type: string
+        thumbnailUrl:
+          type: string
+        subscriberCount:
+          type: integer
+        avgViews:
+          type: number
+        avgEngagementRate:
+          type: number
+        avgDurationSeconds:
+          type: number
+        videoCount:
+          type: integer
+        totalViews:
+          type: integer
+
+    CompareInput:
+      type: object
+      required: [channelIds]
+      properties:
+        channelIds:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 10

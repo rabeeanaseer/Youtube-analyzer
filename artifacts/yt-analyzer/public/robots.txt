@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yt-analyzer.replit.app/sitemap.xml
