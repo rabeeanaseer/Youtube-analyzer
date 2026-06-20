@@ -1,8 +1,11 @@
-# YouTube Analyzer
+# 📊 YouTube Analyzer — Channel Growth & Virality Intelligence Platform
 
-> A professional analytics dashboard that pulls live data from the **YouTube Data API v3** to reverse-engineer what makes videos go viral — built for content strategists and creators.
+![LIVE PLATFORM](https://img.shields.io/badge/LIVE_PLATFORM-UP-brightgreen) ![Data Analytics](https://img.shields.io/badge/Data_Analytics-Insights-orange?logo=googleanalytics&logoColor=white) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white) ![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white) ![YouTube API](https://img.shields.io/badge/YouTube_Data_API-v3-FF0000?logo=youtube&logoColor=white) ![License](https://img.shields.io/badge/license-MIT-blue)
 
----
+A professional, full-stack analytics dashboard deployed at **[youtube-analyzer-yt-analyzer.vercel.app](https://youtube-analyzer-yt-analyzer.vercel.app/)** that pulls **live data directly from the YouTube Data API v3** to reverse-engineer what actually drives a channel's growth. Search any channel and instantly get server-computed insights: average views and engagement rate, a 7×24 best-upload-time heatmap, video duration sweet-spot analysis, top 10 performing videos, and AI-style growth suggestions. It also supports side-by-side comparison of up to 5 channels with radar and bar charts, making it a practical research tool for creators, strategists, and marketers studying virality and posting strategy.
+
+
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/35d3388d-6390-4edd-bc88-94e6802f5795" />
 
 ## Table of Contents
 
@@ -266,6 +269,8 @@ All responses are `application/json`. Errors follow `{ "error": "message" }`.
 ```
 
 ### `ChannelDetail` (extends ChannelSummary)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/f91444ac-e4bf-4d29-85f0-e15174b83c4a" />
+
 ```ts
 {
   bannerUrl: string | null
@@ -275,6 +280,8 @@ All responses are `application/json`. Errors follow `{ "error": "message" }`.
 ```
 
 ### `VideoStats`
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/b6a0e6ed-1c31-4f3b-8ab5-887e43a17096" />
+
 ```ts
 {
   id: string
@@ -297,6 +304,8 @@ All responses are `application/json`. Errors follow `{ "error": "message" }`.
 ```
 
 ### `ChannelAnalytics`
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/5c3c843b-d6f2-4a73-9866-bdebc8137020" />
+
 ```ts
 {
   channelId: string
@@ -318,6 +327,8 @@ All responses are `application/json`. Errors follow `{ "error": "message" }`.
 ```
 
 ### `ChannelComparison`
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/69c49f58-550c-4724-8bba-3a16f20310d0" />
+
 ```ts
 {
   channelId: string
